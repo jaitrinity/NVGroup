@@ -1,0 +1,194 @@
+
+    <div class="container-fluid" style="padding: 10px">
+        <mat-accordion class="example-headers-align">
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <span class="text-bold">Filter</span>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="row">
+              <div class="col-md-3">
+                <label class="text-bold ">Sub Category <span title="Reset Sub Category" (click) = "selectedSubcategoryList = []"><i class="fa fa-refresh" aria-hidden="true"></i></span></label>
+                <ng-multiselect-dropdown [placeholder]="'Select'" [data]="subcategoryList" 
+                  [(ngModel)]="selectedSubcategoryList" [settings]="multiSelectdropdownSettings"
+                  (onSelect)="onSelectOrDeselectSubcategory($event)" (onDeSelect)="onSelectOrDeselectSubcategory($event)"
+                  (onSelectAll)="onSelectAllOrDeselectAllSubcategory($event)" (onDeSelectAll)="onSelectAllOrDeselectAllSubcategory($event)">
+                </ng-multiselect-dropdown>
+              </div>
+              
+          
+              <div class="col-md-3">
+                <label class="text-bold ">Start Date <span title="Reset start date" (click) = "filterStartDate = ''"><i class="fa fa-refresh" aria-hidden="true"></i></span> </label>
+                <input type="date" class="form-control input-sm tom-border-radius" [(ngModel)]="filterStartDate" (change)="filterEndDate = ''">
+              </div>
+              <div class="col-md-3">
+                <label class="text-bold">End Date <span title="Reset end date" (click) = "filterEndDate = ''"><i class="fa fa-refresh" aria-hidden="true"></i></span></label>
+                <input type="date" class="form-control input-sm tom-border-radius"  [(ngModel)]="filterEndDate" [min]="filterStartDate">
+              </div>
+              <div class="col-md-3">
+                <label style="color: transparent;display: block">filter</label>
+                <button class="btn btn-sm text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="getMenuTrasactions(0)">
+                  <i class="fa fa-filter" aria-hidden="true"></i> Filter
+                </button>
+                &nbsp;
+                <button class="btn btn-sm text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" [disabled] = "transactionHdrList.length == 0"
+                (click)="exportData()">
+                  <i class="fa fa-download"></i> Export 
+                </button>
+                
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+        
+      <div class="row" style="margin-bottom: 10px;overflow: auto">
+        <div class="col-md-12">
+          <ng2-smart-table class="hdr" [settings]="transactionHdrSettings" [source]="transactionHdrList" (delete)="viewDetails($event)"></ng2-smart-table>
+        </div>
+      </div>
+        
+        
+        <div id="viewDetailsModal" class="modal fade" role="dialog">
+          <div class="modal-dialog modal-lg" style="max-width:  1320px !important">
+              <div class="modal-content">
+                  <div class="modal-header" style="padding: 10px !important;">
+                    <h4 class="modal-title">View : {{transactionId}}</h4>
+                    
+                    <div>
+                      <button type="button" class="btn  btn-sm text-white" [ngStyle]="{'background-color':button}" (click)="generateDetPDF()">
+                        <i class="fa fa-download"></i> PDF
+                      </button> &nbsp;
+                     
+                      <button type="button" class="btn  btn-sm text-white" [ngStyle]="{'background-color':button}" (click)="closeModal()">Close</button>
+                    </div>
+                  </div>
+                  <div class="modal-body det-modal-body" id="content">
+                    
+                    <div class="row">
+                      <div class="col-md-12">
+                       
+                        <table class="table table-bordered myTable" style="box-shadow: 0px 0px 3px 0px gray">
+                          <thead>
+                            <tr>
+                              <th style="width: 65px;">SR No</th> <th style="width: 500px;">Checkpoint</th> <th>Value</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let td of transactionDetList" [ngClass]="{'text-white' : td.typeId == 17}" [ngStyle]="{'background-color': td.typeId == 17 ? color1 : ''}">
+                              <td *ngIf="td.value == '' && td.typeId == 17" colspan="3">{{td.checkpoint}}</td>
+                              <td *ngIf="td.value != '' ">{{td.srNumber}}</td>
+                              <td *ngIf="td.value != '' ">{{td.checkpoint}}</td>
+                              <td *ngIf="td.value != '' && td.typeId != 5 && td.typeId != 6 && td.typeId != 12">{{td.value}}</td>
+                              <td *ngIf="td.value != '' && (td.typeId == 5 || td.typeId == 6)">
+                               
+                                <div class="row" >
+                                  <div class="col-md-3">
+                                    <img [src] = "v" *ngFor="let v of td.value?.split(',')" class="small-image img-thumbnail" (click)="openMedia(v);">
+                                  </div>
+                                  <div class="col-md-6">
+                                    
+                                    <div>Latlong : <a href="https://www.google.co.in/maps/search/{{td.imgLatLong}}" target="blank">{{td.imgLatLong}}</a></div>
+                                    <div>Datetime : {{td.imgDatetime}}</div>
+                                  </div>
+                                </div>
+                                
+                              </td>
+                              <td *ngIf="td.value != '' && td.typeId == 12 ">
+                                <span *ngFor="let v of td.value?.split(',')" (click)="openMedia(v)">
+                                  <i class="fa fa-video-camera" aria-hidden="true"></i> &nbsp;
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+  
+                    <div class="row" *ngIf="verifyDetList.length != 0 ">
+                        <div class="col-md-12 text-bold">
+                          <label>Verified checkpoint : Verified by {{viewVerifiedBy}} on {{viewVerifiedDate}}.</label>
+                        </div>
+                        <div class="col-md-12">
+                          
+                          <table class="table table-bordered myTable"  style="box-shadow: 0px 0px 3px 0px gray">
+                            <thead>
+                              <tr>
+                                <th style="width: 65px;">SR No</th> <th style="width: 500px;">Checkpoint</th> <th>Value</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let td of verifyDetList" [ngClass]="{'text-white' : td.typeId == 17}" [ngStyle]="{'background-color': td.typeId == 17 ? color1 : ''}">
+                                <td *ngIf="td.value == '' && td.typeId == 17" colspan="3">{{td.checkpoint}}</td>
+                                <td>{{td.srNumber}}</td>
+                                <td>{{td.checkpoint}}</td>
+                                <td *ngIf="td.typeId != 5 && td.typeId != 6 && td.typeId != 12">{{td.value}}</td>
+                                <td *ngIf="td.value != '' && (td.typeId == 5 || td.typeId == 6)">
+                                  <div class="row">
+                                    <div class="col-md-3">
+                                      <img [src] = "v" *ngFor="let v of td.value?.split(',')" class="small-image img-thumbnail" (click)="openMedia(v);">
+                                    </div>
+                                    <div class="col-md-6">
+                                      <div>Latlong : <a href="https://www.google.co.in/maps/search/{{td.imgLatLong}}" target="blank">{{td.imgLatLong}}</a></div>
+                                      <div>Datetime : {{td.imgDatetime}}</div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td *ngIf="td.typeId == 12">
+                                  <span *ngFor="let v of td.value?.split(',')" (click)="openMedia(v)">
+                                    <i class="fa fa-video-camera" aria-hidden="true"></i> &nbsp;
+                                  </span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+          
+                      <div class="row" *ngIf="approveDetList.length != 0">
+                        <div class="col-md-12 text-bold">
+                          <label>Approved checkpoint : Approved by {{viewApprovedBy}} on {{viewApprovedDate}}.</label>
+                        </div>
+                        <div class="col-md-12">
+                          <table class="table table-bordered myTable"  style="box-shadow: 0px 0px 3px 0px gray">
+                            <thead>
+                              <tr>
+                                <th style="width: 65px;">SR No</th> <th style="width: 500px;">Checkpoint</th> <th>Value</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let td of approveDetList" [ngClass]="{'text-white' : td.typeId == 17}" [ngStyle]="{'background-color': td.typeId == 17 ? color1 : ''}">
+                                <td *ngIf="td.value == '' && td.typeId == 17" colspan="3">{{td.checkpoint}}</td>
+                                <td *ngIf="td.value != '' ">{{td.srNumber}}</td>
+                                <td *ngIf="td.value != '' ">{{td.checkpoint}}</td>
+                                <td *ngIf="td.value != '' && td.typeId != 5 && td.typeId != 6 && td.typeId != 12">{{td.value}}</td>
+                                <td *ngIf="td.value != '' && (td.typeId == 5 || td.typeId == 6)">
+                                  <div class="row">
+                                    <div class="col-md-3">
+                                      <img [src] = "v" *ngFor="let v of td.value?.split(',')" class="small-image img-thumbnail" (click)="openMedia(v);">
+                                    </div>
+                                    <div class="col-md-6">
+                                      <div>Latlong : <a href="https://www.google.co.in/maps/search/{{td.imgLatLong}}" target="blank">{{td.imgLatLong}}</a></div>
+                                      <div>Datetime : {{td.imgDatetime}}</div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td *ngIf="td.value != '' && td.typeId == 12">
+                                  <span *ngFor="let v of td.value?.split(',')" (click)="openMedia(v)">
+                                    <i class="fa fa-video-camera" aria-hidden="true"></i> &nbsp;
+                                  </span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+            
+        
+                    
+                  </div>
+                 
+              </div>
+          </div>
+        </div>

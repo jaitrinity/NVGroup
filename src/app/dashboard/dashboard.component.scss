@@ -1,0 +1,90 @@
+table{
+    text-align: center;
+}
+table th, table td{
+    padding: 0px;
+}
+.label-transparent{
+    color: transparent;display: block
+}
+canvas, .table-report{
+    cursor: pointer;
+}
+mat-chip{
+    font-size: 12px;
+    min-height: 25px;
+}
+.outer-div{
+    height: 100%;
+    background: #e9e8e6;
+}
+.table-div{
+    max-height: 200px;
+    overflow: auto;
+}
+.pm-graph-canvas{
+    height : 30vh; width : 80vw;
+}
+.row-gap{
+    margin-top: 10px;
+}
+.text-bold{
+    font-size: 14px;
+}
+.mat-chip-percent{
+    background: #fff !important;
+    border : 1px solid #80705c !important;
+    color: #80705c !important;
+}
+
+::ng-deep .mat-tab-body-wrapper {
+    height: 88.3vh; //required height
+}
+
+.truncate {
+    // display:inline-block;
+    width:80px;
+    white-space: nowrap;
+    overflow: hidden;
+    // text-overflow: ellipsis;
+}
+.truncate1 {
+    // display:inline-block;
+    // width:56px;
+    white-space: nowrap;
+    overflow: hidden;
+    // text-overflow: ellipsis;
+}
+.mytable{
+    width: 100%;
+}
+.mytable td, .mytable th{
+    padding: 0px !important;
+}
+.mytable, th, td {
+    border: 1px solid black;
+}
+.mytable th {
+    // position: -webkit-sticky; 
+    // position: sticky;
+    // top: 0;
+    // z-index: 10;
+    background-color:#cfcfcf;
+}
+.graph-name-div{
+    background: #80705c;
+}
+.pd-t-8{
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+.graph-name, .mat-icon{
+    color: white;
+}
+.not-done{
+    background-color: #f35151;
+    color:white;
+}
+.fm-select{
+    border: 2px solid #d7ac65 !important;
+}

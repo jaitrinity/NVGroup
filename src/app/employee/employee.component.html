@@ -1,0 +1,187 @@
+
+<div class="container-fluid" style="padding: 10px">
+  <mat-chip-list #chipList aria-label="Fruit selection">
+    <mat-chip color="white" selected (click)="changeSelected($event)">Create Employee<mat-icon>add_circle_outline</mat-icon></mat-chip>
+    <mat-chip color="white" (click)="exportData(9)">Export<mat-icon>download</mat-icon> </mat-chip>
+  </mat-chip-list>
+</div>
+
+    <mat-tab-group>
+    
+      <mat-tab label="View Employee">
+        <div class="row" style="margin:0px 0px 10px;overflow:auto;">
+          <div class="col-md-12 table-data-div">
+            <ng2-smart-table [settings]="employeeTableSettings" [source]="employeeList" (custom)="onCustomAction($event)"></ng2-smart-table>
+          </div>
+        </div>
+      </mat-tab>
+  
+    </mat-tab-group>
+
+    <div id="createEmployeeModal" class="modal fade" role="dialog">
+      <div class="modal-dialog modal-lg" >
+        <div class="modal-content">
+          <div class="modal-header" style="padding: 10px !important;">
+            <h4 class="modal-title"></h4>
+            <button type="button" class="btn  btn-sm text-white" [ngStyle]="{'background-color':button}" (click)="closeAnyModal('createEmployeeModal')">Close</button>
+          </div>
+          <div class="modal-body det-modal-body">
+            <div class="row" >
+              <div class="col-md-12">
+                <label class="text-bold ">! All * fields are Mandatory.</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="text-bold ">Employee Code <span>*</span> </label>
+                <input type="text" class="form-control input-sm tom-border-radius" [(ngModel)]="employeeCode">
+              </div>
+              <div class="col-md-6">
+                <label class="text-bold ">Employee Name <span>*</span> </label>
+                <input type="text" class="form-control input-sm tom-border-radius" [(ngModel)]="employeeName">
+              </div> 
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="text-bold ">Mobile <span>*</span> </label>
+                <input type="text" class="form-control input-sm tom-border-radius" [(ngModel)]="mobile" OnlyNumber="true" LengthValidater="10">
+              </div>
+
+              <div class="col-md-6">
+                <label class="text-bold ">E-mail Id <span>*</span> </label>
+                <input type="text" class="form-control input-sm tom-border-radius" [(ngModel)]="emailId">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="text-bold ">Role <span>*</span> </label>
+                <ng-multiselect-dropdown [placeholder]="'Select'" [data]="roleList"
+                  [(ngModel)]="selectedRoleList" [settings]="singleSelectdropdownSettings"
+                  (onSelect) = "onSelectOrDeselectRole($event)" (onDeSelect) = "onSelectOrDeselectRole($event)">
+                </ng-multiselect-dropdown>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="text-bold ">RM <span *ngIf="!(isAdmin || isRM || isSH)">*</span> </label>
+                <ng-multiselect-dropdown [placeholder]="'Select'" [data]="rmIdList"
+                  [(ngModel)]="selectedRmIdList" [settings]="singleSelectdropdownSettings"
+                  [disabled]="isAdmin || isRM || isSH">
+                </ng-multiselect-dropdown>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <label class="text-bold ">State <span>*</span> </label>
+                <div class="forNonSH">
+                  <ng-multiselect-dropdown [placeholder]="'Select'" [data]="stateList"
+                    [(ngModel)]="selectedStateList" [settings]="singleSelectdropdownSettings"
+                    (onSelect) = "onSelectOrDeselectState($event)" (onDeSelect) = "onSelectOrDeselectState($event)">
+                  </ng-multiselect-dropdown>
+                </div>
+                <div class="forSH">
+                  <ng-multiselect-dropdown [placeholder]="'Select'" [data]="stateList"
+                    [(ngModel)]="selectedStateList" [settings]="multiSelectdropdownSettings"
+                    (onSelect) = "onSelectOrDeselectState($event)" (onDeSelect) = "onSelectOrDeselectState($event)">
+                  </ng-multiselect-dropdown>
+                </div>
+                
+              </div>
+              <div class="col-md-6">
+                <label class="text-bold ">HQ <span *ngIf="!(isAdmin || isSH)">*</span> </label>
+                <ng-multiselect-dropdown [placeholder]="'Select'" [data]="stateHqList"
+                  [(ngModel)]="selectedStateHqList" [settings]="singleSelectdropdownSettings"
+                  [disabled]="isAdmin || isSH">
+                </ng-multiselect-dropdown>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <label style="color: transparent;display: block">filter</label>
+                <button class="btn text-bold text-white tom-border-radius" [ngStyle]="{'background-color':button}" (click)="submitEmployeeData()">Submit</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+    </div>
+      
+      <div id="editEmployeeModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="padding: 10px !important;">
+                  <h4 class="modal-title">Edit : {{editableEmployeeId}}</h4>
+                  <button type="button" class="btn  btn-sm text-white" [ngStyle]="{'background-color':button}" (click)="closeModal()">Close</button>
+                </div>
+            
+                <div class="modal-body det-modal-body">
+                  <div class="row" >
+                    <div class="col-md-12">
+                      <label class="text-bold ">! All * fields are Mandatory.</label>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label class="text-bold ">Employee Name <span>*</span></label>
+                      <input type="text" class="form-control input-sm tom-border-radius" [(ngModel)]="editEmployeeName" (input)="isDoAnyChange = false">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="text-bold ">Role <span>*</span></label>
+                      <ng-multiselect-dropdown [placeholder]="'Select'" [data]="roleList"
+                        [(ngModel)]="editSelectedRoleList" [settings]="singleSelectdropdownSettings"
+                        (onSelect)="onSelectOrDeselectEditRole($event);isDoAnyChange = false" 
+                        (onSelectAll)="onSelectOrDeselectEditRole($event);isDoAnyChange = false">
+                      </ng-multiselect-dropdown>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label class="text-bold ">Mobile <span>*</span></label>
+                      <input type="text" class="form-control input-sm tom-border-radius" [(ngModel)]="editMobile" (input)="isDoAnyChange = false" OnlyNumber="true" LengthValidater="10">
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="text-bold ">E-mail <span>*</span></label>
+                      <input type="text" class="form-control input-sm tom-border-radius" [(ngModel)]="editEmailId" (input)="isDoAnyChange = false">
+                    </div>
+                   
+                    <div class="col-md-6">
+                      <label class="text-bold ">State <span>*</span></label>
+                      <div class="edit_forNonSH">
+                        <ng-multiselect-dropdown [placeholder]="'Select'" [data]="stateList"
+                          [(ngModel)]="editSelectedStateList" [settings]="singleSelectdropdownSettings"
+                          (onSelect)="isDoAnyChange = false" (onSelectAll)="isDoAnyChange = false">
+                        </ng-multiselect-dropdown>
+                      </div>
+                      <div class="edit_forSH">
+                        <ng-multiselect-dropdown [placeholder]="'Select'" [data]="stateList"
+                          [(ngModel)]="editSelectedStateList" [settings]="multiSelectdropdownSettings"
+                          (onSelect)="isDoAnyChange = false" (onSelectAll)="isDoAnyChange = false">
+                        </ng-multiselect-dropdown>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="text-bold ">RM <span *ngIf="!(isAdmin || isRM || isSH)">*</span> </label>
+                      <ng-multiselect-dropdown [placeholder]="'Select'" [data]="rmIdList"
+                        [(ngModel)]="editSelectedRmIdList" [settings]="singleSelectdropdownSettings"
+                        (onSelect)="isDoAnyChange = false" (onSelectAll)="isDoAnyChange = false"
+                        [disabled] = "isAdmin || isRM || isSH">
+                      </ng-multiselect-dropdown>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 text-center">
+                      <label style="color: transparent;display: block">filter</label>
+                      <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" [(disabled)] = "isDoAnyChange" (click)="editEmployeeData()">Save</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+      </div>

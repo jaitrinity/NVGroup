@@ -1,0 +1,67 @@
+<main class="Background" *ngIf='ShowLoading'>
+  <div class="loader">
+      <!-- <div class="loader__bar"></div>
+      <div class="loader__bar"></div>
+      <div class="loader__bar"></div>
+      <div class="loader__bar"></div>
+      <div class="loader__bar"></div>
+      <div class="loader__ball"></div> -->
+      <img src="assets/img/whisky-scotch.gif" height="160px"/>
+  </div>    
+</main>
+
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #SideMenu class="sidenav" fixedInViewport [mode]="'side'" [opened]="ToggleVariable">
+      <mat-toolbar style="background: white; padding: 2px 0px;">
+        <div>abcd</div>
+        <img src="assets/img/NVGroup.png" alt="assets.logo.svg" style="width:88px;height:58px">
+        <div>abcd</div>
+      </mat-toolbar>
+      <ul class="unselectable" style="height: 70%;">
+        
+        <li routerLink="m2" [routerLinkActive] = '["ActiveRoute"]' *ngIf="empRoleId == '1'">
+          <img src="assets/img/admin.png" alt="vendor Icon" style="width : 20px;border-radius: 10px"> 
+          Employee
+        </li>
+        <li routerLink="m3" [routerLinkActive] = '["ActiveRoute"]' *ngIf="empRoleId == '1' || empRoleId == '3'">
+          <img src="assets/img/location.png" alt="Location" style="width : 20px;border-radius: 10px"> 
+          Location
+        </li>
+        <!-- <li routerLink="m4" [routerLinkActive] = '["ActiveRoute"]' *ngIf="empRoleId == '1' || empRoleId == '3'">
+          <img src="assets/img/location.png" alt="Mapping" style="width : 20px;border-radius: 10px"> 
+          Mapping
+        </li> -->
+        <!-- <li routerLink="dashboard" [routerLinkActive] = '["ActiveRoute"]' > 
+          <img src="assets/img/graph.jpg" alt="Dashboard" style="width : 20px;border-radius: 10px"> 
+          Dashboard
+        </li> -->
+        <li [routerLink]="[menu.routerLink]" [routerLinkActive] = '["ActiveRoute"]' *ngFor="let menu of menuList"> 
+            <img [src]="[menu.icon]" alt="icon" style="width : 20px;border-radius: 10px"> 
+            {{menu.menuName}}
+        </li>
+        <li routerLink="m11" [routerLinkActive] = '["ActiveRoute"]'> 
+          <img src="assets/img/excel.jpg" alt="Excel Icon" style="width : 20px;border-radius: 10px"> 
+            Report
+        </li>
+        <li routerLink="m12" [routerLinkActive] = '["ActiveRoute"]'> 
+          <img src="assets/img/attendance.png" alt="Excel Icon" style="width : 20px;border-radius: 10px"> 
+            Attendance
+        </li>
+      </ul>
+      <ul>
+        <li>
+          <button mat-button (click)='Logout()' class="logout-btn">
+          {{empName}} || Logout 
+          <mat-icon>exit_to_app</mat-icon>
+          </button></li>
+      </ul>
+              
+    </mat-sidenav>
+    <mat-sidenav-content>
+  
+      <div style="background: white;min-height: 96%;margin: 10px;border: 1px solid #efe1e1;">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  

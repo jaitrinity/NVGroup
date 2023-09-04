@@ -1,0 +1,43 @@
+
+<div class="container-fluid" style="padding: 10px">
+    <!-- <div class="row">
+      <div class="col-md-12">
+        <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="searchDeviceData()">
+          <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+        </button>
+      </div>
+    </div> -->
+  <div class="row">
+    <div class="col-md-3">
+      <label class="text-bold ">From Date <span title="Reset from date" (click) = "filterStartDate = ''"><i class="fa fa-refresh" aria-hidden="true"></i></span> </label>
+      <input type="date" class="form-control input-sm tom-border-radius" [(ngModel)]="filterStartDate" (change)="filterEndDate = ''">
+    </div>
+    <div class="col-md-3">
+      <label class="text-bold">To Date <span title="Reset to date" (click) = "filterEndDate = ''"><i class="fa fa-refresh" aria-hidden="true"></i></span></label>
+      <input type="date" class="form-control input-sm tom-border-radius"  [(ngModel)]="filterEndDate" [min]="filterStartDate">
+    </div>
+    <div class="col-md-3">
+      <label style="color: transparent;display: block">filter</label>
+      <button class="btn btn-sm text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="getAttendanceList()">
+        <i class="fa fa-filter" aria-hidden="true"></i> Filter
+      </button>
+      &nbsp;
+      <button class="btn btn-sm text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" [disabled] = "attandanceList.length == 0"
+      (click)="exportData()">
+        <i class="fa fa-download"></i> Export 
+      </button>
+    </div>
+  </div>
+</div> 
+  
+<mat-tab-group>
+      
+  <mat-tab label="View Attendance">
+    <div class="row" style="margin-bottom: 10px;overflow: auto;">
+      <div class="col-md-12 table-data-div">
+        <ng2-smart-table [settings]="attendanceTableSettings" [source]="attandanceList"></ng2-smart-table>
+      </div>
+    </div>
+  </mat-tab>
+  
+</mat-tab-group>

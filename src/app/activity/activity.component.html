@@ -1,0 +1,29 @@
+<div class="container-fluid" style="padding: 10px">
+    <!-- <div class="container-fluid" [ngStyle]="{'background-color':color2}" style="padding: 10px"> -->
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="searchActivityData()">
+            <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="row" style="margin-bottom: 10px;overflow: auto;">
+      <div class="col-md-12  table-data-div">
+        <ng2-smart-table [settings]="activitySettings" [source]="activityList"></ng2-smart-table>
+      </div>
+  </div> -->
+
+  <mat-tab-group>
+    
+    <mat-tab label="View Activity">
+      <div class="row" style="margin-bottom: 10px;overflow: auto;">
+        <div class="col-md-12  table-data-div">
+          <ng2-smart-table [settings]="activitySettings" [source]="activityList"></ng2-smart-table>
+        </div>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+      

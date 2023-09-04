@@ -1,0 +1,278 @@
+
+<div class="container-fluid" style="padding: 10px">
+  <mat-chip-list aria-label="Fish selection">
+    <!-- <mat-chip color="white" (click)="openAnyModal('createMappingModal')" selected>Create Mapping <mat-icon>add_circle_outline</mat-icon> </mat-chip> -->
+    <mat-chip color="white" (click)="openAnyModal('ticketUploadModal')" selected>Ticket Upload <mat-icon>add_circle_outline</mat-icon> </mat-chip>
+    <mat-chip color="white" (click)="exportMapping()">Export<mat-icon>download</mat-icon> </mat-chip>
+  </mat-chip-list>
+</div>
+
+<mat-accordion class="example-headers-align">
+	
+
+  <mat-tab-group>
+    
+    <mat-tab label="View Mappoing">
+      <div class="row" style="margin-bottom: 10px;overflow: auto;">
+        <div class="col-md-12 table-data-div">
+          <ng2-smart-table [settings]="mappingTableSettings" [source]="mappingList" (custom)="onCustomAction($event)"></ng2-smart-table>
+        </div>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+
+  <div id="createMappingModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="padding: 10px !important;">
+          <h4 class="modal-title"></h4>
+          <button type="button" class="btn  btn-sm text-white" [ngStyle]="{'background-color':button}" (click)="closeAnyModal('createMappingModal')">Close</button>
+        </div>
+        <!-- [ngStyle]="{'background-color':color2}" -->
+        <div class="modal-body det-modal-body">
+          <div class="row" >
+            <div class="col-md-12">
+              <label class="text-bold ">! All * fields are Mandatory.</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="text-bold ">Category <span>*</span></label>
+              <ng-multiselect-dropdown [placeholder]="'Select'" [data]="categoryList"
+                [(ngModel)]="selectedCategoryList" [settings]="singleSelectdropdownSettings"
+                (onSelect)="onSelectCategory($event)" (onDeSelect)="onDeselectCategory($event)"
+                >
+              </ng-multiselect-dropdown>
+            </div>
+            <div class="col-md-6">
+              <label class="text-bold ">Sub Category</label>
+              <ng-multiselect-dropdown [placeholder]="'Select'" [data]="subCategoryList"
+                [(ngModel)]="selectedSubcategoryList" [settings]="singleSelectdropdownSettings"
+                (onSelect)="onSelectSubcategory($event)" (onDeSelect)="onDeselectSubcategory($event)"
+                >
+              </ng-multiselect-dropdown>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="text-bold ">Caption</label>
+              <ng-multiselect-dropdown [placeholder]="'Select'" [data]="captionList"
+                [(ngModel)]="selectedCaptionList" [settings]="singleSelectdropdownSettings"
+                (onSelect)="onSelectOrDeselectCaption($event)" (onDeSelect)="onSelectOrDeselectCaption($event)"
+                >
+              </ng-multiselect-dropdown>
+            </div>
+  
+            <div class="col-md-6">
+              <label class="text-bold ">State <span>*</span></label>
+              <ng-multiselect-dropdown [placeholder]="'Select'" [data]="stateList"
+                [(ngModel)]="selectedStateList" [settings]="multiSelectdropdownSettings"
+                (onSelect)="onSelectOrDeselectState($event)" (onDeSelect)="onSelectOrDeselectState($event)">
+              </ng-multiselect-dropdown>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+                <label class="text-bold ">City</label>
+                <ng-multiselect-dropdown [placeholder]="'Select'" [data]="cityList"
+                  [(ngModel)]="selectedCityList" [settings]="singleSelectdropdownSettings"
+                  (onSelect)="onSelectOrDeselectCity($event)" (onDeSelect)="onSelectOrDeselectCity($event)"
+                  (onSelectAll)="onSelectAllOrDeselectAllCity($event)" (onDeSelectAll) = "onSelectAllOrDeselectAllCity($event)">
+                </ng-multiselect-dropdown>
+            </div>
+          
+            <div class="col-md-6">
+                <label class="text-bold ">Area</label>
+                <ng-multiselect-dropdown [placeholder]="'Select'" [data]="areaList"
+                  [(ngModel)]="selectedAreaList" [settings]="singleSelectdropdownSettings"
+                  (onSelect)="onSelectOrDeselectArea($event)" (onDeSelect)="onSelectOrDeselectArea($event)"
+                  (onSelectAll)="onSelectAllOrDeselectAllArea($event)" (onDeSelectAll) = "onSelectAllOrDeselectAllArea($event)">
+                </ng-multiselect-dropdown>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="text-bold ">Employee Role <span>*</span></label>
+              <ng-multiselect-dropdown [placeholder]="'Select'" [data]="employeeList"
+                [(ngModel)]="selectedEmployeeList" [settings]="multiSelectdropdownSettings"
+                (onSelect)="onSelectOrDeselectEmployee($event)" (onDeSelect)="onSelectOrDeselectEmployee($event)"
+                >
+              </ng-multiselect-dropdown>
+            </div>
+          
+            <div class="col-md-6">
+              <label class="text-bold ">Verifier Role</label>
+              <ng-multiselect-dropdown [placeholder]="'Select'" [data]="verifierList"
+                [(ngModel)]="selectedVerifierList" [settings]="singleSelectdropdownSettings"
+                (onSelect)="onSelectOrDeselectVerifier($event)" (onDeSelect)="onSelectOrDeselectVerifier($event)"
+                >
+              </ng-multiselect-dropdown>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="text-bold ">Approver Role</label>
+              <ng-multiselect-dropdown [placeholder]="'Select'" [data]="approverList"
+                [(ngModel)]="selectedApproverList" [settings]="singleSelectdropdownSettings"
+                >
+              </ng-multiselect-dropdown>
+            </div>
+                 
+        
+            <div class="col-md-6">
+              <label class="text-bold ">Start Date <span>*</span> <span title="Reset start date" (click) = "startDate = ''"><i class="fa fa-refresh" aria-hidden="true"></i></span> </label> 
+              <input type="date" class="form-control input-sm tom-border-radius" [(ngModel)]="startDate" min="{{minStartDate}}" (change) = "endDate = '' " >
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="text-bold ">End Date <span>*</span> <span title="Reset end date" (click) = "endDate = ''"><i class="fa fa-refresh" aria-hidden="true"></i></span></label>
+              <input type="date" class="form-control input-sm tom-border-radius" [(ngModel)]="endDate" min="{{startDate}}" [disabled] = "startDate == ''">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <label style="color: transparent;display: block">filter</label>
+              <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="submitMappingData()">Submit</button>
+            </div>
+          </div>
+          
+          <div class="row" *ngIf="inProgress">
+            <div class="col-md-12">
+              <h5 class="text-center text-danger"><i>! Please wait..</i></h5>
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ticketUploadModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header" style="padding: 10px !important;">
+          <h4 class="modal-title"></h4>
+          <button type="button" class="btn  btn-sm text-white" [ngStyle]="{'background-color':button}" (click)="closeAnyModal('ticketUploadModal')">Close</button>
+        </div>
+        <div class="modal-body det-modal-body">
+          <div class="row" >
+            <div class="col-md-12">
+              <label class="text-bold ">! All * fields are Mandatory.</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <label class="text-bold ">Select excel file <span>*</span></label>
+              <input type="file" (change)="addfile($event)" id="uploadFile" class="form-control input-sm tom-border-radius" 
+              placeholder="Upload file" accept=".csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label style="color: transparent;display: block">filter</label>
+              <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="uploadLocData()">
+                  <i class="fa fa-upload" aria-hidden="true"></i> Upload
+              </button>
+            </div>
+          
+            <div class="col-md-6">
+              <label style="color: transparent;display: block">filter</label>
+              <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="downloadFormat()">
+                  <i class="fa fa-download" aria-hidden="true"></i> Download Format
+              </button>
+              <span class="text-danger blink" style="display: block">
+                * Before upload please download format.
+              </span>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <label style="color: transparent;display: block">filter</label>
+            <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="exportData(7)">
+              <i class="fa fa-download" aria-hidden="true"></i> Download all location
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+          
+      </div>
+    </div>
+  </div>
+</div>
+      
+      <div id="mappingInfoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-md">
+          <div class="modal-content">
+              <div class="modal-header" style="padding: 10px !important;">
+                <h4 class="modal-title">! Info</h4>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-12 text-center">
+                    <h3>Comma separate Location Id</h3>
+                    <div>Syntax : locationId1,locationId2, ...</div>
+                    <div>Ex : 1,2, ...</div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn  btn-sm text-white text-bold" [ngStyle]="{'background-color':button}" (click)="closeModal()">Close</button>
+              </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="editMappingModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg" style="max-width:  1320px !important">
+            <div class="modal-content">
+                <div class="modal-header" style="padding: 10px !important;">
+                  <h4 class="modal-title">Edit : {{editableMappingId}}</h4>
+                  <button type="button" class="btn  btn-sm text-white" [ngStyle]="{'background-color':button}" (click)="closeEditModal()">Close</button>
+                </div>
+                <!-- [ngStyle]="{'background-color':color2}" -->
+                <div class="modal-body det-modal-body">
+                  <div class="row">
+                    <div class="col-md-2">
+                      <label class="text-bold ">Location</label>
+                      <ng-multiselect-dropdown [placeholder]="'Select'" [data]="locationList"
+                        [(ngModel)]="editableSelectedLocationList" [settings]="singleSelectdropdownSettings"
+                        (onSelect)="isDoAnyChange = false" (onDeSelect)="isDoAnyChange = false"
+                        (onSelectAll)="isDoAnyChange = false" (onDeSelectAll)="isDoAnyChange = false"
+                      >
+                      </ng-multiselect-dropdown>
+                    </div>
+                    <div class="col-md-2">
+                      <label class="text-bold ">Verifier</label>
+                      <ng-multiselect-dropdown [placeholder]="'Select'" [data]="editVerifierList"
+                        [(ngModel)]="editableSelectedVerifierList" [settings]="singleSelectdropdownSettings"
+                        (onSelect)="onSelectOrDeselectEditableVerifier($event)" (onDeSelect)="onSelectOrDeselectEditableVerifier($event)"
+                        >
+                      </ng-multiselect-dropdown>
+                    </div>
+                    <div class="col-md-2">
+                      <label class="text-bold ">Approver</label>
+                      <ng-multiselect-dropdown [placeholder]="'Select'" [data]="editApproverList"
+                        [(ngModel)]="editableSelectedApproverList" [settings]="singleSelectdropdownSettings"
+                        (onSelect)="isDoAnyChange = false" (onDeSelect)="isDoAnyChange = false"
+                        >
+                      </ng-multiselect-dropdown>
+                    </div>
+                
+                    <div class="col-md-4">
+                      <label style="color: transparent;display: block">filter</label>
+                      <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" [(disabled)] = "isDoAnyChange" (click)="editMappingData()">Save</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+      </div>

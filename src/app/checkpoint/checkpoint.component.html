@@ -1,0 +1,295 @@
+
+<div class="container-fluid" style="padding: 10px">
+  <mat-chip-list #chipList aria-label="Fruit selection">
+    <mat-chip color="white" selected (click)="changeSelected($event)">
+        Create checkpoint
+        <mat-icon>add_circle_outline</mat-icon>
+      </mat-chip>
+  </mat-chip-list>
+</div>
+
+<mat-tab-group class="max-content-width">
+  <mat-tab label="View Checkpoint">
+    <div class="row" style="margin-bottom: 10px;overflow: auto">
+      <div class="col-md-12 table-data-div">
+        <ng2-smart-table [settings]="checkpointTableSettings" [source]="checkpointList"></ng2-smart-table>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+      
+<div id="createCheckpointModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg" style="max-width:  1320px !important">
+    <div class="modal-content">
+      <div class="modal-header" style="padding: 10px !important;">
+        <h4 class="modal-title"></h4>
+        <button type="button" class="btn  btn-sm text-white" [ngStyle]="{'background-color':button}" (click)="closeModal('createCheckpointModal')">Close</button>
+      </div>
+      <!-- [ngStyle]="{'background-color':color2}" -->
+      <div class="modal-body det-modal-body">
+        <div class="row" >
+          <div class="col-md-12">
+            <label class="text-bold ">! All * fields are Mandatory.</label>
+          </div>
+        </div>
+        <div class="row" >
+          <div class="col-md-2">
+            <label class="text-bold ">Input type <span>*</span> </label>
+            
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings" 
+            [data]="inputTypeList" [(ngModel)]="selectedInputTypeList" 
+              (onSelect)="onSelectOrDeselectInputType($event)" (onDeSelect)="onSelectOrDeselectInputType($event)">
+            </ng-multiselect-dropdown>
+          </div>
+          
+          <div class="col-md-8">
+            <label class="text-bold ">Desciption <span>*</span> </label>
+            <input type="text" class="form-control input-sm tom-border-radius" placeholder="description" [(ngModel)]="description" [disabled]="isAllOk"/>
+          </div>
+      
+          <div class="col-md-2">
+            <label class="text-bold ">Mandatory <span>*</span> </label>
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings"
+             [data]="mandatoryList" [(ngModel)]="selectedMandatoryList" 
+              [disabled]="isAllOk">
+            </ng-multiselect-dropdown>
+          </div>
+        
+          <div class="col-md-2">
+            <label class="text-bold ">Editable <span>*</span> </label>
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings"
+             [data]="editableList" [(ngModel)]="selectedEditableList" 
+              [disabled]="isAllOk">
+            </ng-multiselect-dropdown>
+          </div>
+      
+          <div class="col-md-8" *ngIf="isShowQueryTxt">
+            <label class="text-bold ">{{valueHTML}} <span>*</span> </label>
+            <input type="text" class="form-control input-sm tom-border-radius" placeholder="Ex : select column_name from table_name" [(ngModel)]="optionValue"/>
+          </div>
+      
+          <div class="col-md-4" *ngIf="isShowVideoBrowser">
+            <label class="text-bold ">{{videoBrowserHTML}} (Max Size 10MB) <span>*</span> </label>
+            <input type="file" class="form-control input-sm tom-border-radius" id="videoBase64" accept=".mp4" 
+            (change)="changeListener($event,1)"/>
+          </div>
+      
+          <div class="col-md-4" *ngIf="isShowImageBrowser">
+            <label class="text-bold ">{{imageBrowserHTML}} (Max Size 500KB) <span>*</span> </label>
+            <input type="file" class="form-control input-sm tom-border-radius" id="imageBase64" accept=".jpg,.jpeg,.png" 
+            (change)="changeListener($event,2)"/>
+          </div>
+          
+          <div class="col-md-2" *ngIf="!(isShowValueTxt == false && isShowValueSelect == false)">
+            <label class="text-bold ">{{valueHTML}} <span *ngIf="!(isShowValueTxt == false && isShowValueSelect == false)">*</span> </label>
+            <input type="text" class="form-control input-sm tom-border-radius" [(ngModel)]="optionValue" [disabled]="true" *ngIf="isShowValueTxt == false && isShowValueSelect == false"/>
+            <input type="text" class="form-control input-sm tom-border-radius" OnlyNumber="{{valueInNumber}}" [(ngModel)]="optionValue" [disabled]="isAllOk" placeholder="{{valuePlaceholder}}" *ngIf="isShowValueTxt"/>
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings"
+            [data]="valueList" [(ngModel)]="selectedValueList" 
+              (onSelect)="onSelectOrDeselectValue($event)" (onDeSelect)="onSelectOrDeselectValue($event)"
+              *ngIf="isShowValueSelect">
+            </ng-multiselect-dropdown>
+          </div>
+      
+          <div class="col-md-2" *ngIf="!(isShowCorrectTxt == false && isShowCorrectSelect == false)">
+            <label class="text-bold ">{{correctHTML}} <span *ngIf="!(isShowCorrectTxt == false && isShowCorrectSelect == false)">*</span> </label>
+            <input type="text" class="form-control input-sm tom-border-radius" [(ngModel)]="correct" [disabled]="true" *ngIf="isShowCorrectTxt == false && isShowCorrectSelect == false" />
+            <input type="text" class="form-control input-sm tom-border-radius" OnlyNumber="{{correctInNumber}}" [(ngModel)]="correct" [disabled]="isAllOk" placeholder="{{correctPlaceholder}}" *ngIf="isShowCorrectTxt" />
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings" 
+            [data]="correctList" [(ngModel)]="selectedCorrectList" 
+              *ngIf="isShowCorrectSelect">
+            </ng-multiselect-dropdown>
+          </div>
+      
+          <div class="col-md-2" *ngIf="!(isShowSizeTxt == false && isShowSizeSelect == false && isInputTypeIsNumber == false)">
+            <label class="text-bold ">{{sizeHTML}} <span *ngIf="!(isShowSizeTxt == false && isShowSizeSelect == false && isInputTypeIsNumber == false)">*</span> </label>
+            <input class="form-control input-sm tom-border-radius" [(ngModel)]="size" [disabled]="true" *ngIf="isShowSizeTxt == false && isShowSizeSelect == false  && isInputTypeIsNumber == false"/>
+            <input class="form-control input-sm tom-border-radius" OnlyNumber="{{sizeInNumber}}" [(ngModel)]="size" [disabled]="isAllOk" placeholder="{{sizePlaceholder}}" *ngIf="isShowSizeTxt"/>
+      
+            <div *ngIf="isInputTypeIsNumber">
+              <input type="text" class="form-control input-sm tom-border-radius isInputTypeIsNumber" OnlyNumber="{{sizeInNumber}}" maxlength="2" placeholder="Max 99" [(ngModel)]="prefixSize" />
+              <input type="text" class="form-control input-sm tom-border-radius isInputTypeIsNumber" OnlyNumber="{{sizeInNumber}}" maxlength="1" placeholder="Max 4" [(ngModel)]="suffixSize"/>
+            </div>
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings" 
+            [data]="sizeList" [(ngModel)]="selectedSizeList" 
+              *ngIf="isShowSizeSelect" [disabled]="isSizeSelectDisabled">
+            </ng-multiselect-dropdown>
+          </div>
+      
+          <div class="col-md-2" *ngIf="isShowScoreTxt">
+            <label class="text-bold ">Score <span *ngIf="isShowScoreTxt">*</span> </label>
+            <input class="form-control input-sm tom-border-radius" [(ngModel)]="score" [disabled]="true" *ngIf="!isShowScoreTxt"/>
+            <input class="form-control input-sm tom-border-radius" [(ngModel)]="score" *ngIf="isShowScoreTxt" placeholder="{{scorePlaceholder}}"/>
+          </div>
+          
+          <div class="col-md-2">
+            
+            <label class="text-bold ">Language <span>*</span> </label>
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings" 
+            [data]="languageList" [(ngModel)]="selectedLanguageList" 
+              [disabled]="isAllOk">
+            </ng-multiselect-dropdown>
+          </div>
+      
+          <div class="col-md-2" *ngIf="!(isShowActive == false)">
+            
+            <label class="text-bold ">{{activeHTML}} <span>*</span> </label>
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings" 
+            [data]="activeList" [(ngModel)]="selectedActiveList" 
+              [disabled]="isAllOk">
+            </ng-multiselect-dropdown>
+          </div>
+          
+          <div class="col-md-2" *ngIf="!(isShowDependentTxt == false && isShowDependentSelect == false)">
+            <label class="text-bold ">Dependent <span *ngIf="!(isShowDependentTxt == false && isShowDependentSelect == false)">*</span> </label>
+            <input class="form-control input-sm tom-border-radius" [(ngModel)]="dependent" [disabled] = "true" *ngIf="isShowDependentTxt == false && isShowDependentSelect == false"/> 
+            <input class="form-control input-sm tom-border-radius" [(ngModel)]="dependent" *ngIf="isShowDependentTxt"/> 
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings" 
+            [data]="dependentList" [(ngModel)]="selectedDepetendentList" 
+              (onSelect)="onSelectOrDeselectDependent($event)" (onDeSelect)="onSelectOrDeselectDependent($event)"
+              *ngIf="isShowDependentSelect">
+            </ng-multiselect-dropdown>
+          </div>
+          <div class="col-md-2" *ngIf="isShowLogicTxt">
+            <label class="text-bold ">Logic <span *ngIf="!isShowLogicTxt">*</span> </label>
+            <input class="form-control input-sm tom-border-radius" [disabled] = "true" *ngIf="!isShowLogicTxt"/>
+            
+            <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="multiSelectdropdownSettings" 
+            [data]="logicCheckpointList" [(ngModel)]="selectedLogicCheckpointList" 
+              *ngIf="isShowLogicTxt" >
+            </ng-multiselect-dropdown>
+          </div>
+        </div> 
+        <div style="width: 100%;" *ngIf="noOfOptionRow">
+          <div style="margin: 10px;padding: 10px;border: 1px solid white;border-radius: 20px;background: #e5e3ec;box-shadow:5px 5px 10px grey">
+            <div class="row" >
+              <div class="col-md-2" >
+                <label class="text-bold ">No of Option <span>*</span> </label>
+                <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="singleSelectdropdownSettings" 
+                [data]="maxNoOfOption" [(ngModel)]="selectedMaxNoOfOption" 
+                  (onSelect)="onSelectOrDeselectNoOfOption($event)" (onDeSelect)="onSelectOrDeselectNoOfOption($event)">
+                </ng-multiselect-dropdown>
+              </div>
+              <div class="col-md-10" *ngIf="noOfOption.length !=0">
+                <div class="row">
+                  <div class="col-md-3 text-center" ><label class="text-bold">Option <span>*</span> </label></div>
+                  <div class="col-md-3 text-center" ><label class="text-bold">Correct %</label></div>
+                  <div class="col-md-3 text-center" ><label class="text-bold">Is Dependent</label></div>
+                  <div class="col-md-3 text-center" ><label class="text-bold">Logic</label></div>
+                </div>
+                <div class="row" *ngFor="let op of noOfOption">
+                  <div class="col-md-3" >
+                     
+                      <input type="text" placeholder="Option {{op}}" class="form-control input-sm tom-border-radius optionValue"/>
+                  </div>
+                  <div class="col-md-3" >
+                    <mat-slider
+                    #gridsize
+                    thumbLabel
+                    [displayWith]="formatLabel"
+                    tickInterval="20"
+                    step="20"
+                    min="0"
+                    max="100" class="correctPercentSlider"></mat-slider> 
+                    <label class="text-bold">{{gridsize.value}}</label>
+                  </div>
+                  <div class="col-md-3 text-center" >
+                    <input type="checkbox" value="{{op}}" id="dependentCheckbox{{op}}" (click)="isDependentOption(op)"/>
+                  </div>
+                  <div class="col-md-3 logicDiv" id="logicDiv{{op}}">
+                    <input type="hidden" id="logicTxtBox{{op}}" class="logicTxtBox"/>
+                    <ng-multiselect-dropdown [placeholder]="'Select'" [settings]="multiSelectdropdownSettings"
+                    [data]="logicCheckpointList"
+                    (onSelect)="onSelectLogic($event,op)" (onDeSelect)="onDeselectLogic($event,op)"
+                    (onSelectAll)="onSelectAllLogic($event,op)" (onDeSelectAll)="onDeselectAllLogic($event,op)">
+                    </ng-multiselect-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row" *ngIf="errorInQuery">
+          <div class="col-md-12">
+              <label class="text-bold"><i class="text-warning">{{queryInfo}}{{sqlQueryError}}{{queryColumn}}</i></label>
+          </div>
+          <div class="col-md-12" *ngIf="columnValueArr.length !=0">
+            <select class="form-control input-sm tom-border-radius"> <option *ngFor="let cv of columnValueArr">{{cv}}</option> </select>
+          </div>
+        </div>
+      
+        <div class="row">
+          <div class="col-md-12">
+            <label style="color: transparent;display: block">0</label>
+            
+            <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="submitCheckpointData(0)" [disabled]="isAllOk" *ngIf="queryColumn == ''">Submit</button>
+            <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="submitCheckpointData(1)" *ngIf="queryColumn != ''">Save Query</button> &nbsp;
+            <button class="btn text-white text-bold tom-border-radius" [ngStyle]="{'background-color':button}" (click)="queryColumn = '';columnValueArr=[] " *ngIf="queryColumn != ''">Cancel</button>
+          </div>
+        </div>
+      
+        <div class="row" *ngIf="inProgress">
+          <div class="col-md-12">
+            <h5 class="text-center text-danger"><i>! Please wait..</i></h5>
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div> 
+  </div>
+</div>
+        
+      
+      
+      <div id="checkpointLogicInfoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-md">
+          <div class="modal-content">
+              <div class="modal-header" style="padding: 10px !important;">
+                <h4 class="modal-title">! Info</h4>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-12 text-center">
+                    <h3>Logic</h3>
+                    <div>Syntax : </div>
+                    <div>Ex : </div>
+                  </div>
+                </div>
+      
+              </div>
+              <div class="modal-footer">
+                <!-- <button type="button" class="btn  btn-sm hsil-red text-white text-bold" (click)="closeModal('checkpointLogicInfoModal')">Close</button> -->
+                <button type="button" class="btn  btn-sm text-white text-bold" [ngStyle]="{'background-color':button}" (click)="closeModal('checkpointLogicInfoModal')">Close</button>
+              </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="checkpointSizeInfoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-md">
+          <div class="modal-content">
+              <div class="modal-header" style="padding: 10px !important;">
+                <h4 class="modal-title">! Info</h4>
+              </div>
+              <div class="modal-body">
+      
+                <div class="row">
+                  <div class="col-md-12 text-center">
+                    <h3>Size</h3>
+                    <div>Syntax : </div>
+                    <div>Ex : </div>
+                  </div>
+                </div>
+      
+      
+              </div>
+              <div class="modal-footer">
+                <!-- <button type="button" class="btn  btn-sm hsil-red text-white text-bold" (click)="closeModal('checkpointSizeInfoModal')">Close</button> -->
+                <button type="button" class="btn  btn-sm text-white text-bold" [ngStyle]="{'background-color':button}" (click)="closeModal('checkpointSizeInfoModal')">Close</button>
+              </div>
+          </div>
+        </div>
+      </div>

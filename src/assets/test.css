@@ -1,0 +1,26 @@
+.myTable{
+	width : 100%;
+	margin-bottom: 10px;
+	border-collapse: collapse;
+}
+.myTable thead{
+	background-color: rgb(40, 193, 244);
+	color: white;
+}
+.myTable tr th, .myTable tr td{
+	padding: 0px;
+	border : 1px solid black;
+	border-spacing: 0;
+}
+.small-image{
+	width: 50px;
+	height: 50px;
+	cursor: pointer;
+}
+.text-bold{
+	font-weight: 500 !important;
+    color : #d7ac65;
+}
+.text-danger{
+	color: #dc3545!important
+}

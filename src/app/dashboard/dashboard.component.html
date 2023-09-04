@@ -1,0 +1,958 @@
+
+<mat-tab-group mat-align-tabs="start" *ngIf="!isTechnician">
+    <mat-tab label="Incident Graph">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-4 pd-t-8">
+                            <label class="text-bold graph-name">Incident Management Graph</label>
+                        </div>
+                        <div class="col-md-7 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="monthYear1 != '' " >{{monthYear1}} </mat-chip>
+                                <mat-chip class="truncate" color="white" *ngIf="incidentCategory1 != '' " >{{incidentCategory1}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu1="matMenuTrigger" [matMenuTriggerFor]="beforeMenu1" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu1 #beforeMenu1="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Month</label>
+                                        <!-- <select class="form-control input-sm select-sm" [(ngModel)]="monthYear1" (change)="generateGraph1()"> -->
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="monthYear1" (change)="generateInciGraphMonthWise(monthYear1)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option *ngFor="let ml of monthList" value="{{ml.paramCode}}">{{ml.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Incident Category</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="incidentCategory1" (change)="generateGraph1()">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option *ngFor="let ic of incidentCategoryList" value="{{ic.paramCode}}">{{ic.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress1">
+                        <div class="col-md-12 text-center">
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv1">
+                        <div class="col-md-6 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height = "35vh" width = "80vw"
+                                        [data]="pieChartData"
+                                        [labels]="pieChartLabels"
+                                        [options]="pieChartOptions"
+                                        [chartType]="pieChartType"
+                                        [colors]="pieChartColors"
+                                        (chartClick)="chartClicked($event,1)"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6 pd-t-8 table-div">
+                            <table class="mytable">
+                                <thead>
+                                    <tr> <th *ngFor="let tc of pieTableColumn">{{tc}}</th> </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let td of pieTableData">
+                                        <td>{{td.category}}</td> <td>{{td.count}}</td>
+                                    </tr>
+                                </tbody>
+                                <thead>
+                                    <tr><th>Total</th> <th>{{totalFibercut}}</th> </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound1">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-gap" *ngIf="isFiberCut">
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-6 pd-t-8">
+                            <label class="text-bold graph-name">Fiber Cut Incident</label>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress3">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv3">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height="37vh" width="80vw"
+                                        [datasets]="barChartData3"
+                                        [labels]="barChartLabels3"
+                                        [options]="barChartOptions2"
+                                        [legend]="barChartLegend"
+                                        [chartType]="barChartType"
+                                        [colors]="barChartColors3"
+                                        (chartClick)="chartClicked($event,3)">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound3">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-6 pd-t-8">
+                            <label class="text-bold graph-name">MTTR Of Fiber Cut</label>
+                        </div>
+                        <div class="col-md-5 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="monthYear3 != '' " >{{monthYear3}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu3="matMenuTrigger" [matMenuTriggerFor]="beforeMenu3" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu3 #beforeMenu3="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Month</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="monthYear3" (change)="generateInciGraphMonthWise(monthYear3)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option *ngFor="let ml of monthList" value="{{ml.paramCode}}">{{ml.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress3">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv3">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height="37vh" width="80vw"
+                                        [datasets]="barChartData33"
+                                        [labels]="barChartLabels33"
+                                        [options]="barChartOptions3"
+                                        [legend]="barChartLegend"
+                                        [chartType]="barChartType"
+                                        [colors]="barChartColors33"
+                                        (chartClick)="chartClicked($event,3)">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound3">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-gap"  *ngIf="isFiberCut">
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-8 pd-t-8">
+                            <label class="text-bold graph-name">Frequent Failing Fiber Cut Circle Wise</label>
+                        </div>
+                        <div class="col-md-3 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="quarter5 != '' " >{{quarter5}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu2="matMenuTrigger" [matMenuTriggerFor]="beforeMenu2" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu2 #beforeMenu2="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Quarter</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="quarter5" (change)="generateInciGraphQuarterWise(quarter5)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option value="{{ql.paramCode}}" *ngFor="let ql of quarterList">{{ql.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress2">
+                        <div class="col-md-12 text-center">
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv2">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height="37vh" width="80vw"
+                                        [datasets]="barChartData"
+                                        [labels]="barChartLabels"
+                                        [options]="barChartOptions"
+                                        [legend]="barChartLegend"
+                                        [chartType]="barChartType"
+                                        [colors]="barChartColors"
+                                        (chartClick)="chartClicked($event,2)">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound2">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-8 pd-t-8">
+                            <label class="text-bold graph-name">Frequent Failing Fiber Cut Site Wise</label>
+                        </div>
+                        <div class="col-md-3 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="quarter6 != '' " >{{quarter6}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu9="matMenuTrigger" [matMenuTriggerFor]="beforeMenu9" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu9 #beforeMenu9="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Quarter</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="quarter6" (change)="generateInciGraphQuarterWise(quarter6)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option value="{{ql.paramCode}}" *ngFor="let ql of quarterList">{{ql.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress9">
+                        <div class="col-md-12 text-center">
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv9">
+                        <div class="col-md-12 pd-t-8 table-div">
+                            <table class="mytable">
+                                <thead>
+                                    <tr> <th *ngFor="let tc of barTableColumn7">{{tc}}</th> </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let td of barTableData7">
+                                        <td>{{td.circle}}</td> <td>{{td.siteId}}</td> <td>{{td.repeatCount}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound9">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </mat-tab>
+    <mat-tab label="PM Graph">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-6 pd-t-8">
+                            <label class="text-bold graph-name">Preventive Maintenance</label>
+                        </div>
+                        <div class="col-md-5 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" class="mat-chip-percent" *ngIf="quarter != '' " >PM % : {{pmPercentage}} %</mat-chip>
+                                <mat-chip color="white" *ngIf="quarter != '' " >{{quarter}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu4="matMenuTrigger" [matMenuTriggerFor]="beforeMenu4" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu4 #beforeMenu4="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Quarter</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="quarter" (change)="generateAllPMGraph(quarter)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option value="{{ql.paramCode}}" *ngFor="let ql of quarterList">{{ql.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress4">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv4">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height = "37vh" width = "80vw"
+                                        [datasets]="barChartData4"
+                                        [labels]="barChartLabels4"
+                                        [options]="barChartOptions4"
+                                        [legend]="barChartLegend"
+                                        [chartType]="barChartType"
+                                        [colors]="barChartColors4"
+                                        (chartClick)="chartClicked($event,4)">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound4">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-4 pd-t-8">
+                            <label class="text-bold graph-name">Site Type Wise PM</label>
+                        </div>
+                        <div class="col-md-7 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip class="mat-chip-percent" color="white" *ngIf="quarter1 != '' " >PM % : {{pmPercentage1}} %</mat-chip>
+                                <mat-chip color="white" *ngIf="quarter1 != '' " >{{quarter1}} </mat-chip>
+                                <mat-chip class="truncate1" color="white" *ngIf="siteType != '' " >{{siteType}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu5="matMenuTrigger" [matMenuTriggerFor]="beforeMenu5" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu5 #beforeMenu5="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Quarter</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="quarter1" (change)="generateAllPMGraph(quarter1)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option value="{{ql.paramCode}}" *ngFor="let ql of quarterList">{{ql.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Site Type</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="siteType" (change)="generateGraph5()">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option *ngFor="let st of siteTypeList" value="{{st.paramCode}}">{{st.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress5">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv5">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height = "37vh" width = "80vw"
+                                        [datasets]="barChartData5"
+                                        [labels]="barChartLabels5"
+                                        [options]="barChartOptions4"
+                                        [legend]="barChartLegend"
+                                        [chartType]="barChartType"
+                                        [colors]="barChartColors5"
+                                        (chartClick)="chartClicked($event,5)">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound5">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-gap" >
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-8 pd-t-8">
+                            <label class="text-bold graph-name">Weekly PM</label>
+                        </div>
+                        <div class="col-md-3 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="quarter3 != '' " >{{quarter3}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu7="matMenuTrigger" [matMenuTriggerFor]="beforeMenu7" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu7 #beforeMenu7="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Quarter</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="quarter3" (change)="generateAllPMGraph(quarter3)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option value="{{ql.paramCode}}" *ngFor="let ql of quarterList">{{ql.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress7">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv7">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height = "37vh" width = "80vw"
+                                [datasets]="lineChartData"
+                                [labels]="lineChartLabels"
+                                [legend]="lineChartLegend"
+                                [options]="lineChartOptions"
+                                [chartType]="lineChartType"
+                                [colors]="lineChartColor"
+                                (chartClick)="chartClicked($event,7)">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound7">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-8 pd-t-8">
+                            <label class="text-bold graph-name">PM Punchpoint</label>
+                        </div>
+                        <div class="col-md-3 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="quarter2 != '' " >{{quarter2}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu8="matMenuTrigger" [matMenuTriggerFor]="beforeMenu8" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu8 #beforeMenu8="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Quarter</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="quarter2" (change)="generateAllPMGraph(quarter2)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option value="{{ql.paramCode}}" *ngFor="let ql of quarterList">{{ql.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress8">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv8">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height = "37vh" width = "80vw"
+                                        [datasets]="barChartData6"
+                                        [labels]="barChartLabels6"
+                                        [options]="barChartOptions5"
+                                        [legend]="barChartLegend"
+                                        [chartType]="barChartType"
+                                        [colors]="barChartColors6"
+                                        (chartClick)="chartClicked($event,8)">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound8">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-gap" >
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-6 pd-t-8">
+                            <label class="text-bold graph-name">Metro And Airport Sites PM</label>
+                        </div>
+                        <div class="col-md-5 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="quarter4 != '' " >{{quarter4}} </mat-chip>
+                                <mat-chip class="truncate1" color="white" *ngIf="quarter4 != '' " >{{metroSiteType}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu6="matMenuTrigger" [matMenuTriggerFor]="beforeMenu6" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu6 #beforeMenu6="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Quarter</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="quarter4" (change)="generateAllPMGraph(quarter4)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option value="{{ql.paramCode}}" *ngFor="let ql of quarterList">{{ql.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Site Type</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="metroSiteType" (change)="generateGraph6()">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option *ngFor="let st of metroSiteTypeList" value="{{st.paramCode}}">{{st.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress6">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv6">
+                        <div class="col-md-8 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height = "50vh" width = "80vw"
+                                [data]="pieChartData2"
+                                [labels]="pieChartLabels2"
+                                [options]="pieChartOptions"
+                                [chartType]="pieChartType"
+                                [colors]="pieChartColors2"
+                                (chartClick)="chartClicked($event,6)"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4 pd-t-8 table-div">
+                            <table class="mytable">
+                                <thead>
+                                    <tr> <th *ngFor="let tc of pieTableColumn2">{{tc}}</th> </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td *ngFor="let td of pieTableData2">{{td}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-7 pd-t-8">
+                            <label class="text-bold graph-name">Metro And Airport Sites PM 3</label>
+                        </div>
+                        <div class="col-md-5 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="quarter4 != '' " >{{quarter4}} </mat-chip>
+                                <mat-chip class="truncate1" color="white" *ngIf="quarter4 != '' " >{{metroSiteType}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress6">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv6">
+                        <div class="col-md-12 pd-t-8 table-div">
+                            <table class="mytable table-report" (click)="downloadGraphReport(13)">
+                                <thead>
+                                    <tr> <th>Site Id</th> <th>Status</th> </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let td of tableData" [ngClass]="{'not-done' : td.status == 'Not Done'}">
+                                        <td>{{td.siteId}}</td> <td>{{td.status}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-gap" >
+            <div class="col-md-6">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-8 pd-t-8">
+                            <label class="text-bold graph-name">Metro And Airport Sites PM 2</label>
+                        </div>
+                        <div class="col-md-3 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="quarter7 != '' " >{{quarter7}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu11="matMenuTrigger" [matMenuTriggerFor]="beforeMenu11" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu11 #beforeMenu11="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Quarter</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="quarter7" (change)="generateAllPMGraph(quarter7)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option value="{{ql.paramCode}}" *ngFor="let ql of quarterList">{{ql.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress11">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv11">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height = "37vh" width = "80vw"
+                                        [datasets]="barChartData9"
+                                        [labels]="barChartLabels9"
+                                        [options]="barChartOptions8"
+                                        [legend]="barChartLegend"
+                                        [chartType]="barChartType"
+                                        [colors]="barChartColors9"
+                                        (chartClick)="chartClicked($event,11)">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound11">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Training Graph">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-6 pd-t-8">
+                            <label class="text-bold graph-name">Training Graph</label>
+                        </div>
+                        <div class="col-md-5 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="trainingName != '' " >{{trainingName}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu10="matMenuTrigger" [matMenuTriggerFor]="beforeMenu10" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu10 #beforeMenu10="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Training Name</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="trainingName" (change)="generateAllTrainingGraph(trainingName)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option *ngFor="let tn of trainingNameList" value="{{tn.paramCode}}">{{tn.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress10">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv10">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height = "18vh" width = "80vw"
+                                        [datasets]="barChartData8"
+                                        [labels]="barChartLabels8"
+                                        [options]="barChartOptions7"
+                                        [legend]="barChartLegend"
+                                        [chartType]="barChartType"
+                                        [colors]="barChartColors8"
+                                        (chartClick)="chartClicked($event,10)">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound10">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-gap">
+            <div class="col-md-12">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-4 pd-t-8">
+                            <label class="text-bold graph-name">Training Graph 2</label>
+                        </div>
+                        <div class="col-md-2 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" class="mat-chip-percent">Pass % - {{passPercentage}} %</mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-5 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="trainingName2 != '' " >{{trainingName2}} </mat-chip>
+                                <mat-chip color="white" *ngIf="state != '' " >{{state}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu12="matMenuTrigger" [matMenuTriggerFor]="beforeMenu12" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu12 #beforeMenu12="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Training Name</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="trainingName2" (change)="generateAllTrainingGraph(trainingName2)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option *ngFor="let tn of trainingNameList" value="{{tn.paramCode}}">{{tn.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row" (click)="$event.stopPropagation();" *ngIf="loginEmpRoleId == '10' || loginEmpRoleId == '50' || loginEmpRoleId == '51' || loginEmpRoleId == '52' ">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">State</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="state" (change)="generateGraph12()">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option *ngFor="let st of stateList" value="{{st.paramCode}}">{{st.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row" *ngIf="inProgress12">
+                                <div class="col-md-12 text-center">
+                                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                    <h5 class="text-warning">Please wait...</h5>
+                                </div>
+                            </div>
+                            <div class="row" *ngIf="graphDiv12">
+                                <div class="col-md-12 pd-t-8">
+                                    <div style="display: block">
+                                        <canvas baseChart height = "35vh" width = "80vw"
+                                                [data]="pieChartData3"
+                                                [labels]="pieChartLabels3"
+                                                [options]="pieChartOptions"
+                                                [chartType]="pieChartType"
+                                                [colors]="pieChartColors3"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" *ngIf="noDataFound12">
+                                <div class="col-12">
+                                    <img src="assets/img/no_record_found.jpg" width="100%"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row" *ngIf="inProgress12">
+                                <div class="col-md-12 text-center">
+                                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                    <h5 class="text-warning">Please wait...</h5>
+                                </div>
+                            </div>
+                            <div class="row" *ngIf="graphDiv12">
+                                <div class="col-md-12 pd-t-8 table-div">
+                                    <table class="mytable">
+                                        <thead>
+                                            <tr> <th *ngFor="let tc of pieTableColumn3">{{tc}}</th> </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let td of pieTableData3">
+                                                <td>{{td.empName}}</td> <td>{{td.status}}</td> <td>{{td.percentage}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row" *ngIf="noDataFound12">
+                                <div class="col-12">
+                                    <img src="assets/img/no_record_found.jpg" width="100%"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row row-gap">
+            <div class="col-md-12">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-6 pd-t-8">
+                            <label class="text-bold graph-name">Training Question</label>
+                        </div>
+                        <div class="col-md-5 pd-t-8">
+                            <mat-chip-list aria-label="Fish selection">
+                                <mat-chip color="white" *ngIf="trainingName != '' " >{{trainingName}} </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <button mat-icon-button #menu13="matMenuTrigger" [matMenuTriggerFor]="beforeMenu13" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu13 #beforeMenu13="matMenu" xPosition="before">
+                                <div class="row" (click)="$event.stopPropagation();">
+                                    <div class="col-md-12">
+                                        <label class="text-bold">Training Name</label>
+                                        <select class="form-control input-sm select-sm" [(ngModel)]="trainingName" (change)="generateAllTrainingGraph(trainingName)">
+                                            <option value="" [disabled]=true>Select</option>
+                                            <option *ngFor="let tn of trainingNameList" value="{{tn.paramCode}}">{{tn.paramDesc}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="inProgress10">
+                        <div class="col-md-12 text-center" >
+                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            <h5 class="text-warning">Please wait...</h5>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv10">
+                        <div class="col-md-12 pd-t-8">
+                            <table class="mytable table-report" (click)="downloadGraphReport(14)">
+                                <thead>
+                                    <tr> <th>Question</th> <th>Correct %</th> <th>Incorrect %</th> </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let td of quesPercentageArr">
+                                        <td>{{td.question}}</td> <td>{{td.correctPercentage}}</td> <td>{{td.inCorrectPercentage}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="noDataFound10">
+                        <div class="col-12">
+                            <img src="assets/img/no_record_found.jpg" width="100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-gap">
+            <div class="col-md-4" *ngFor="let qg of trQuesGraphArr">
+                <div class="outer-div">
+                    <div class="row graph-name-div">
+                        <div class="col-md-12 pd-t-8">
+                            <label class="text-bold graph-name">{{qg.ques}}</label>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="graphDiv10">
+                        <div class="col-md-12 pd-t-8">
+                            <div style="display: block">
+                                <canvas baseChart height = "35vh" width = "80vw"
+                                    [data]="qg.dataArr"
+                                    [labels]="qg.labelArr"
+                                    [options]="pieChartOptions"
+                                    [chartType]="pieChartType"
+                                    [colors]="qg.colorArr">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab disabled>
+        <ng-template mat-tab-label>
+            <select class="form-control fm-select" [(ngModel)]="financialYear" (change)="selectFinancialYear()">
+                <option value="" [disabled]=true>Select</option>
+                <option *ngFor="let fn of financialYearList">{{fn}}</option>
+            </select>
+        </ng-template>
+    </mat-tab>
+</mat-tab-group>
+<div class="row" *ngIf="isTechnician">
+    <div class="col-12">
+        <img src="assets/img/access_denied.jpg" width="100%"/>
+    </div>
+</div>
